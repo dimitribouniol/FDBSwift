@@ -51,9 +51,19 @@ internal extension Bool {
     }
 }
 
+internal func _precondition(
+    _ condition: @autoclosure () -> Bool,
+    _ message: @autoclosure () -> String = String(),
+    file: StaticString = #file, line: UInt = #line
+) {
+    guard condition() == true else {
+        fatalError("Precondition failed: \(message())", file: file, line: line)
+    }
+}
+
 internal extension Array where Element == Byte {
     @usableFromInline func cast<R>() -> R {
-        precondition(
+        _precondition(
             MemoryLayout<R>.size == self.count,
             "Memory layout size for result type '\(R.self)' (\(MemoryLayout<R>.size) bytes) does not match with given byte array length (\(self.count) bytes)"
         )
